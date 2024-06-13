@@ -1,0 +1,46 @@
+html,
+body {
+  background-color: #404040;
+  padding: 1rem;
+  padding-top: 0rem;
+  color: white;
+}
+
+h1 {
+  color: white;
+  font-size: 3.2rem;
+
+  margin-bottom: 1rem;
+}
+
+h2 {
+  color: white;
+  font-size: 1.6rem;
+  font-weight: normal;
+  margin: 0px;
+  margin-bottom: 0.4rem;
+}
+
+input.searchInput {
+  background-color: #404040;
+  width: 100%;
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.6rem;
+  padding: 0.7rem;
+
+  border: 1px solid #313131;
+
+  -webkit-box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.26);
+  -moz-box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.26);
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.26);
+  box-sizing: border-box;
+  outline: none;
+
+  transition: 0.5s ease;
+
+  &:focus {
+    border: #9f9f9f 1px solid;
+  }
+}
