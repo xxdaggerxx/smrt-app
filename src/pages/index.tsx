@@ -58,12 +58,9 @@ export default function Home() {
     if (after) params.append("after", after);
     if (before) params.append("before", before);
     params.append("count", count + "");
-    console.log(url.toString());
     fetch(url.toString())
       .then(async (response) => {
         const data = (await response.json()) as GetBlogsQuery;
-        console.log(data);
-
         setBlogList(
           data.blog_connection.edges.map((x) => ({
             author: x.node.author || "",

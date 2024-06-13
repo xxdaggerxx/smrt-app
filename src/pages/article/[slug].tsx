@@ -7,6 +7,7 @@ import { graphql } from "@/gql";
 import { Blog } from "@/gql/graphql";
 import { gql } from "graphql-request";
 import { ParsedUrlQuery } from "querystring";
+import { useEffect } from "react";
 
 const dayjs = require("dayjs");
 /*
@@ -47,9 +48,19 @@ const INSERT_BLOG_VIEW = gql`
   }
 `;
 
-type BlogNew = Blog & { ip: string };
-const Article = (article: Blog & { ip: string }) => {
-  console.log(article);
+const Article = (article: Blog) => {
+  useEffect(() => {
+    //log view after 1s
+    setTimeout(logView, 1000);
+  }, []);
+
+  const logView = () => {
+    fetch(`/api/logView?slug=${article.slug}`)
+      .then(async (x) => {
+        console.log("View Logged", await x.json());
+      })
+      .catch((x) => console.error(x));
+  };
 
   return (
     <main className={`${styles.main}`}>
@@ -57,7 +68,7 @@ const Article = (article: Blog & { ip: string }) => {
         <div>
           <h1>{article.title}</h1>
           <span className={styles.caption}>
-            By {article.author}, {article?.created_at} , {article?.ip}
+            By {article.author}, {article?.created_at}
           </span>
         </div>
         <span className={styles.blogView}>
@@ -100,37 +111,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       "MMMM D, YYYY"
     );
 
-    //log the view
-    const forwarded = context.req.headers["x-forwarded-for"];
-    const ip =
-      typeof forwarded === "string"
-        ? forwarded.split(/, /)[0]
-        : context.req.socket.remoteAddress;
-
-    //https://api.iplocation.net/?ip=220.255.198.67
-
-    fetch("https://api.iplocation.net/?ip=220.255.198.67")
-      .then(async (response) => {
-        return await response.json();
-      })
-      .then(async (x) => {
-        return await client.request(INSERT_BLOG_VIEW, {
-          hash: cyrb53(ip + "+++" + slug) + "",
-          ip: ip,
-          location: x.country_name,
-          blog_slug: slug,
-        });
-      })
-      .then(() => {
-        ///all APIs success
-      })
-      .catch((e) => {
-        //error occured
-        //  console.log("ERROR", e);
-      });
-
     return {
-      props: { ...data?.blog?.[0], ip },
+      props: { ...data?.blog?.[0] },
     };
   } catch (e) {
     //redirect if error.
@@ -143,20 +125,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
-
-// hashing function
-function cyrb53(str: string, seed = 0) {
-  let h1 = 0xdeadbeef ^ seed,
-    h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
-  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
-  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
