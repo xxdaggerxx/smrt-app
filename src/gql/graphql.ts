@@ -88,7 +88,7 @@ export type Blog = Node & {
   created_at?: Maybe<Scalars['timestamptz']['output']>;
   id: Scalars['ID']['output'];
   slug: Scalars['String']['output'];
-  title: Scalars['bpchar']['output'];
+  title: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['timestamptz']['output']>;
   views?: Maybe<Scalars['Int']['output']>;
 };
@@ -116,9 +116,47 @@ export type Blog_Bool_Exp = {
   content?: InputMaybe<String_Comparison_Exp>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
   slug?: InputMaybe<String_Comparison_Exp>;
-  title?: InputMaybe<Bpchar_Comparison_Exp>;
+  title?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
   views?: InputMaybe<Int_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "blog" */
+export enum Blog_Constraint {
+  /** unique or primary key constraint on columns "ID" */
+  BlogIdKey = 'blog_ID_key',
+  /** unique or primary key constraint on columns "slug", "ID" */
+  BlogPkey = 'blog_pkey',
+  /** unique or primary key constraint on columns "slug" */
+  BlogSlugKey = 'blog_slug_key'
+}
+
+/** input type for inserting data into table "blog" */
+export type Blog_Insert_Input = {
+  ID?: InputMaybe<Scalars['Int']['input']>;
+  author?: InputMaybe<Scalars['bpchar']['input']>;
+  content?: InputMaybe<Scalars['String']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  views?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** response of any mutation on the table "blog" */
+export type Blog_Mutation_Response = {
+  __typename?: 'blog_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Blog>;
+};
+
+/** on_conflict condition type for table "blog" */
+export type Blog_On_Conflict = {
+  constraint: Blog_Constraint;
+  update_columns?: Array<Blog_Update_Column>;
+  where?: InputMaybe<Blog_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "blog". */
@@ -168,10 +206,16 @@ export type Blog_Stream_Cursor_Value_Input = {
   content?: InputMaybe<Scalars['String']['input']>;
   created_at?: InputMaybe<Scalars['timestamptz']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['bpchar']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
   updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
   views?: InputMaybe<Scalars['Int']['input']>;
 };
+
+/** placeholder for update columns of table "blog" (current role has no relevant permissions) */
+export enum Blog_Update_Column {
+  /** placeholder (do not use) */
+  Placeholder = '_PLACEHOLDER'
+}
 
 /** Boolean expression to filter rows from the table "blog_views". All fields are combined with a logical 'AND'. */
 export type Blog_Views_Bool_Exp = {
@@ -262,8 +306,26 @@ export enum Cursor_Ordering {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
+  /** insert data into the table: "blog" */
+  insert_blog?: Maybe<Blog_Mutation_Response>;
+  /** insert a single row into the table: "blog" */
+  insert_blog_one?: Maybe<Blog>;
   /** insert data into the table: "blog_views" */
   insert_blog_views?: Maybe<Blog_Views_Mutation_Response>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_BlogArgs = {
+  objects: Array<Blog_Insert_Input>;
+  on_conflict?: InputMaybe<Blog_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Blog_OneArgs = {
+  object: Blog_Insert_Input;
+  on_conflict?: InputMaybe<Blog_On_Conflict>;
 };
 
 
@@ -298,6 +360,10 @@ export type Query_Root = {
   /** fetch data from the table: "blog" */
   blog_connection: BlogConnection;
   node?: Maybe<Node>;
+  /** execute function "search_blogs" which returns "blog" */
+  search_blogs: Array<Blog>;
+  /** execute function "search_blogs" which returns "blog" */
+  search_blogs_connection: BlogConnection;
 };
 
 
@@ -331,6 +397,32 @@ export type Query_RootNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type Query_RootSearch_BlogsArgs = {
+  args?: InputMaybe<Search_Blogs_Args>;
+  distinct_on?: InputMaybe<Array<Blog_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Blog_Order_By>>;
+  where?: InputMaybe<Blog_Bool_Exp>;
+};
+
+
+export type Query_RootSearch_Blogs_ConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  args?: InputMaybe<Search_Blogs_Args>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  distinct_on?: InputMaybe<Array<Blog_Select_Column>>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Blog_Order_By>>;
+  where?: InputMaybe<Blog_Bool_Exp>;
+};
+
+export type Search_Blogs_Args = {
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Subscription_Root = {
   __typename?: 'subscription_root';
   /** fetch data from the table: "blog" */
@@ -342,6 +434,10 @@ export type Subscription_Root = {
   /** fetch data from the table in a streaming manner: "blog" */
   blog_stream: Array<Blog>;
   node?: Maybe<Node>;
+  /** execute function "search_blogs" which returns "blog" */
+  search_blogs: Array<Blog>;
+  /** execute function "search_blogs" which returns "blog" */
+  search_blogs_connection: BlogConnection;
 };
 
 
@@ -382,6 +478,28 @@ export type Subscription_RootNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type Subscription_RootSearch_BlogsArgs = {
+  args?: InputMaybe<Search_Blogs_Args>;
+  distinct_on?: InputMaybe<Array<Blog_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Blog_Order_By>>;
+  where?: InputMaybe<Blog_Bool_Exp>;
+};
+
+
+export type Subscription_RootSearch_Blogs_ConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  args?: InputMaybe<Search_Blogs_Args>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  distinct_on?: InputMaybe<Array<Blog_Select_Column>>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Blog_Order_By>>;
+  where?: InputMaybe<Blog_Bool_Exp>;
+};
+
 /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
 export type Timestamptz_Comparison_Exp = {
   _eq?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -400,17 +518,11 @@ export type GetBlogsQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetBlogsQuery = { __typename?: 'query_root', blog_connection: { __typename?: 'blogConnection', edges: Array<{ __typename?: 'blogEdge', cursor: string, node: { __typename?: 'blog', ID: number, id: string, slug: string, author: any, title: any, created_at?: any | null, views?: number | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string, endCursor: string } } };
-
-export type GetBlogQueryVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type GetBlogQuery = { __typename?: 'query_root', blog: Array<{ __typename?: 'blog', ID: number, title: any, content: string, author: any, slug: string, updated_at?: any | null, created_at?: any | null }> };
+export type GetBlogsQuery = { __typename?: 'query_root', search_blogs_connection: { __typename?: 'blogConnection', edges: Array<{ __typename?: 'blogEdge', cursor: string, node: { __typename?: 'blog', ID: number, id: string, slug: string, author: any, title: string, created_at?: any | null, views?: number | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string, endCursor: string } } };
 
 export type InsertBlogViewsMutationVariables = Exact<{
   hash?: InputMaybe<Scalars['String']['input']>;
@@ -422,7 +534,14 @@ export type InsertBlogViewsMutationVariables = Exact<{
 
 export type InsertBlogViewsMutation = { __typename?: 'mutation_root', insert_blog_views?: { __typename?: 'blog_views_mutation_response', affected_rows: number } | null };
 
+export type GetBlogQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
 
-export const GetBlogsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBlogs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blog_connection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"ID"},"value":{"kind":"EnumValue","value":"desc"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ID"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"author"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}},{"kind":"Field","name":{"kind":"Name","value":"views"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cursor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}}]}}]}}]} as unknown as DocumentNode<GetBlogsQuery, GetBlogsQueryVariables>;
-export const GetBlogDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBlog"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blog"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"slug"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ID"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"author"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"updated_at"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}}]}}]}}]} as unknown as DocumentNode<GetBlogQuery, GetBlogQueryVariables>;
+
+export type GetBlogQuery = { __typename?: 'query_root', blog: Array<{ __typename?: 'blog', ID: number, title: string, content: string, author: any, slug: string, updated_at?: any | null, created_at?: any | null, views?: number | null }> };
+
+
+export const GetBlogsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBlogs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"search_blogs_connection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"args"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"ID"},"value":{"kind":"EnumValue","value":"desc"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ID"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"author"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}},{"kind":"Field","name":{"kind":"Name","value":"views"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cursor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}}]}}]}}]} as unknown as DocumentNode<GetBlogsQuery, GetBlogsQueryVariables>;
 export const InsertBlogViewsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"InsertBlogViews"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hash"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ip"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"location"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"blog_slug"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"bpchar"}},"defaultValue":{"kind":"StringValue","value":"","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insert_blog_views"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"hash"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hash"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"ip"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ip"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"location"},"value":{"kind":"Variable","name":{"kind":"Name","value":"location"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"blog_slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"blog_slug"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affected_rows"}}]}}]}}]} as unknown as DocumentNode<InsertBlogViewsMutation, InsertBlogViewsMutationVariables>;
+export const GetBlogDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBlog"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blog"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"slug"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slug"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ID"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"author"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"updated_at"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}},{"kind":"Field","name":{"kind":"Name","value":"views"}}]}}]}}]} as unknown as DocumentNode<GetBlogQuery, GetBlogQueryVariables>;
