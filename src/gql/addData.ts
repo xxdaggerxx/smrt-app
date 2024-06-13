@@ -1,5 +1,5 @@
 import { GraphQLClient, gql } from "graphql-request";
-import { generate, count } from "random-words";
+import { generate } from "random-words";
 
 // Initialize the GraphQL client
 const endpoint = "https://polished-coral-89.hasura.app/v1/graphql";
