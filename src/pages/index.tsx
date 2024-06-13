@@ -6,7 +6,9 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetBlogsQuery } from "@/gql/graphql";
 import dayjs from "dayjs";
+//import { insertArticles } from "@/gql/addData";
 
+//console.log(insertArticles());
 type BlogList = {
   author: string;
   created_at: string;
@@ -24,10 +26,11 @@ type Pagination = {
 };
 
 export default function Home() {
-  const DEFAULT_COUNT = 3;
+  const DEFAULT_COUNT = 10;
   const router = useRouter();
-  const [blogList, setBlogList] = useState<BlogList[]>([]);
-
+  const [blogList, setBlogList] = useState<BlogList[] | null>([]);
+  const [searchVal, setSearchVal] = useState("");
+  //const debounceValue = useDebounce(searchVal, 800);
   const page = useRef<string>(DEFAULT_COUNT + "");
 
   const [pagination, setPagination] = useState<Pagination>({
@@ -39,17 +42,24 @@ export default function Home() {
     const urlParams = new URLSearchParams(window?.location?.search);
     const after = urlParams.get("after");
     const before = urlParams.get("before");
+    const search = urlParams.get("search");
     const count = urlParams.get("count") || DEFAULT_COUNT + "";
     page.current = count;
-    console.log(after, before, count);
-    getBlogsData(after, before, count);
+    if (search) setSearchVal(search);
+    getBlogsData(after, before, count, search);
   }, [router.asPath]);
 
+  /* useEffect(() => {
+    //route search
+    if (searchVal) router.push(`/?search=${searchVal}`);
+  }, [debounceValue]);
+ */
   //get blogs
   const getBlogsData = (
     after?: string | null,
     before?: string | null,
-    count?: string | null
+    count?: string | null,
+    search?: string | null
   ) => {
     setBlogList([]);
 
@@ -57,27 +67,34 @@ export default function Home() {
     let params = url.searchParams;
     if (after) params.append("after", after);
     if (before) params.append("before", before);
+    if (search) params.append("search", search);
     params.append("count", count + "");
     fetch(url.toString())
       .then(async (response) => {
         const data = (await response.json()) as GetBlogsQuery;
-        setBlogList(
-          data.blog_connection.edges.map((x) => ({
-            author: x.node.author || "",
-            created_at: dayjs(x.node.created_at || "").format(
-              "MMMM D, YYYY, HH:MM"
-            ),
-            slug: x.node.slug || "",
-            title: x.node.title || "",
-            views: x.node.views || 0,
-            id: x.node.ID,
-          }))
-        );
+
+        if (data.search_blogs_connection.edges.length != 0) {
+          setBlogList(
+            data.search_blogs_connection.edges.map((x) => ({
+              author: x.node.author || "",
+              created_at: dayjs(x.node.created_at || "").format(
+                "MMMM D, YYYY, HH:MM"
+              ),
+              slug: x.node.slug || "",
+              title: x.node.title || "",
+              views: x.node.views || 0,
+              id: x.node.ID,
+            }))
+          );
+        } else {
+          setBlogList(null);
+        }
         setPagination({
-          hasNextPage: data.blog_connection.pageInfo.hasNextPage,
-          hasPreviousPage: data.blog_connection.pageInfo.hasPreviousPage,
-          after: data.blog_connection.pageInfo.endCursor,
-          before: data.blog_connection.pageInfo.startCursor,
+          hasNextPage: data.search_blogs_connection.pageInfo.hasNextPage,
+          hasPreviousPage:
+            data.search_blogs_connection.pageInfo.hasPreviousPage,
+          after: data.search_blogs_connection.pageInfo.endCursor,
+          before: data.search_blogs_connection.pageInfo.startCursor,
         });
       })
       .catch((x) => {
@@ -87,7 +104,7 @@ export default function Home() {
   };
 
   const getList = useMemo(() => {
-    return blogList.map((x) => (
+    return blogList?.map((x) => (
       <li
         key={x.id}
         onClick={() => {
@@ -95,9 +112,7 @@ export default function Home() {
         }}
       >
         <span>
-          <h2>
-            {x.title} {x.id}
-          </h2>
+          <h2>{x.title}</h2>
           <span className={styles.blogDetails}>
             By {x.author}, {x.created_at}
           </span>
@@ -126,20 +141,44 @@ export default function Home() {
       <main className={`${styles.main}`}>
         <header>
           <h1>Demo Blog</h1>
-          <input
-            type="text"
-            placeholder="Search Blog..."
-            id="fname"
-            name="fname"
-            className="searchInput"
-          />
+          <form
+            onSubmit={(e) => {
+              router.push(`/?search=${searchVal}`);
+              e.preventDefault();
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Search Blog..."
+              id="fname"
+              name="fname"
+              className="searchInput"
+              value={searchVal}
+              onChange={(x) => {
+                console.log("HIT", x.target.value);
+                setSearchVal(x.target.value);
+                if (!x.target.value) router.push(`/`);
+              }}
+            />
+            <Image
+              width={30}
+              height={30}
+              src={"/icons/search.svg"}
+              alt="view counter"
+              onClick={() => {
+                if (searchVal) router.push(`/?search=${searchVal}`);
+              }}
+            ></Image>
+          </form>
         </header>
         <section>
           <ul className={styles.blogList}>
-            {blogList.length > 0 && getList}
-            {blogList.length == 0 && (
+            {blogList && blogList.length > 0 && getList}
+            {blogList && blogList.length == 0 && (
               <h2 className={styles.centered}>Loading...</h2>
             )}
+
+            {blogList == null && <h2 className={styles.centered}>No Data</h2>}
           </ul>
         </section>
         <nav>
@@ -148,7 +187,8 @@ export default function Home() {
             onClick={() => {
               if (pagination.hasPreviousPage)
                 router.push(
-                  `/?count=${page.current}&before=${pagination.before}`
+                  `/?count=${page.current}&before=${pagination.before}` +
+                    (searchVal ? `&search=${searchVal}` : ``)
                 );
             }}
           >
@@ -165,7 +205,8 @@ export default function Home() {
             onClick={() => {
               if (pagination.hasNextPage)
                 router.push(
-                  `/?count=${page.current}&after=${pagination.after}`
+                  `/?count=${page.current}&after=${pagination.after}` +
+                    (searchVal ? `&search=${searchVal}` : ``)
                 );
             }}
           >

@@ -21,6 +21,7 @@ const GET_BLOG_BY_SLUG = graphql(`
       slug
       updated_at
       created_at
+      views
     }
   }
 `);
@@ -48,7 +49,7 @@ const INSERT_BLOG_VIEW = gql`
 
 const Article = (article: Blog) => {
   useEffect(() => {
-    //log view after 1s
+    //log view after 1/2s
     setTimeout(logView, 500);
   }, []);
 
@@ -69,7 +70,7 @@ const Article = (article: Blog) => {
             By {article.author}, {article?.created_at}
           </span>
         </div>
-        <span className={styles.blogView}>
+        {/*     <span className={styles.blogView}>
           <Image
             width={30}
             height={30}
@@ -77,7 +78,7 @@ const Article = (article: Blog) => {
             alt="view counter"
           ></Image>
           <span className={styles.viewCount}>{article?.views}</span>
-        </span>
+        </span> */}
       </header>
       <article>{article.content}</article>
     </main>

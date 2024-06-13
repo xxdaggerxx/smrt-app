@@ -5,8 +5,15 @@ import { relayClient } from "../../../graphql-client";
 import { GetBlogsQuery } from "@/gql/graphql";
 
 const GET_BLOGS = graphql(`
-  query GetBlogs($first: Int, $after: String, $last: Int, $before: String) {
-    blog_connection(
+  query GetBlogs(
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+    $search: String
+  ) {
+    search_blogs_connection(
+      args: { search: $search }
       first: $first
       order_by: { ID: desc }
       after: $after
@@ -39,13 +46,15 @@ const getBlogs = async (
   first?: number | null, //after
   last?: number | null, //before
   after?: string | null, //first
-  before?: string | null //last
+  before?: string | null, //last
+  search?: string | null
 ) => {
   const variables = {
     first: first || null,
     after: after || null,
     last: last || null,
     before: before || null,
+    search: search || null,
   };
   //console.log("variables", variables);
   const data = await relayClient.request(GET_BLOGS, variables);
@@ -57,6 +66,7 @@ interface CustomApiRequest extends NextApiRequest {
     after?: string;
     before?: string;
     count?: string;
+    search?: string;
   };
 }
 
@@ -71,11 +81,13 @@ export default async function handler(
     } else {
       after = req?.query?.after ? Number(req?.query?.count) || 5 : null;
     }
+    // console.log(req?.query?.search);
     const blogs = await getBlogs(
       after, //after
       req?.query?.before ? Number(req?.query?.count) || 5 : null, // before
       req?.query?.after,
-      req?.query?.before
+      req?.query?.before,
+      req?.query?.search
     );
     res.status(200).json(blogs);
   } catch (e) {
