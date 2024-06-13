@@ -10,9 +10,7 @@ import { ParsedUrlQuery } from "querystring";
 import { useEffect } from "react";
 
 const dayjs = require("dayjs");
-/*
-Need to create a better schema
-*/
+
 const GET_BLOG_BY_SLUG = graphql(`
   query GetBlog($slug: String!) {
     blog(where: { slug: { _eq: $slug } }) {
@@ -51,7 +49,7 @@ const INSERT_BLOG_VIEW = gql`
 const Article = (article: Blog) => {
   useEffect(() => {
     //log view after 1s
-    setTimeout(logView, 1000);
+    setTimeout(logView, 500);
   }, []);
 
   const logView = () => {

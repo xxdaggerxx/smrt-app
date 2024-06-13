@@ -46,7 +46,7 @@ export default async function handler(
 
     //https://api.iplocation.net/?ip=220.255.198.67
 
-    fetch("https://api.iplocation.net/?ip=220.255.198.67")
+    fetch(`https://api.iplocation.net/?ip=${ip}`)
       .then(async (response) => {
         return await response.json();
       })
