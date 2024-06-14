@@ -16,6 +16,7 @@ const GET_BLOGS = graphql(`
       args: { search: $search }
       first: $first
       order_by: { ID: desc }
+
       after: $after
       last: $last
       before: $before
@@ -42,6 +43,7 @@ const GET_BLOGS = graphql(`
   }
 `);
 
+
 const getBlogs = async (
   first?: number | null, //after
   last?: number | null, //before
@@ -67,6 +69,7 @@ interface CustomApiRequest extends NextApiRequest {
     before?: string;
     count?: string;
     search?: string;
+    
   };
 }
 

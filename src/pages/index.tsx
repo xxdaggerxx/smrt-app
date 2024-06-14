@@ -6,9 +6,32 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetBlogsQuery } from "@/gql/graphql";
 import dayjs from "dayjs";
+import { calculatePrice, calculatePrice2 } from "./api/pricing_algo";
+
 //import { insertArticles } from "@/gql/addData";
 
 //console.log(insertArticles());
+
+// Example usage:
+console.log(
+  calculatePrice2(
+    new Date("2021-11-13T09:24:00"),
+    new Date("2021-11-15T15:13:00"),
+    13,
+    [
+      {
+        startDateTime: new Date("2021-11-14T12:00:00"),
+        endDateTime: new Date("2021-11-14T14:01:00"),
+        pricePerHour: 5,
+      },
+      {
+        startDateTime: new Date("2021-11-15T09:00:00"),
+        endDateTime: new Date("2021-11-17T00:00:00"),
+        pricePerHour: 15.2,
+      },
+    ]
+  )
+);
 type BlogList = {
   author: string;
   created_at: string;
