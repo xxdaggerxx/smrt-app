@@ -13,7 +13,7 @@ import { calculatePrice, calculatePrice2 } from "./api/pricing_algo";
 //console.log(insertArticles());
 
 // Example usage:
-console.log(
+/* console.log(
   calculatePrice2(
     new Date("2021-11-13T09:24:00"),
     new Date("2021-11-15T15:13:00"),
@@ -31,7 +31,7 @@ console.log(
       },
     ]
   )
-);
+); */
 type BlogList = {
   author: string;
   created_at: string;
