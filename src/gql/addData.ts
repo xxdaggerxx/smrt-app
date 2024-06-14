@@ -2,7 +2,7 @@ import { GraphQLClient, gql } from "graphql-request";
 import { generate } from "random-words";
 
 // Initialize the GraphQL client
-const endpoint = "https://polished-coral-89.hasura.app/v1/graphql";
+const endpoint = "https://smrt-db-test.fly.dev/v1/graphql";
 const client = new GraphQLClient(endpoint, {
   headers: {
     "x-hasura-admin-secret":

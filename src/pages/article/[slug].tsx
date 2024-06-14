@@ -50,7 +50,7 @@ const INSERT_BLOG_VIEW = gql`
 const Article = (article: Blog) => {
   useEffect(() => {
     //log view after 1/2s
-    setTimeout(logView, 500);
+    setTimeout(logView, 0);
   }, []);
 
   const logView = () => {
