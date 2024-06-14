@@ -8,10 +8,4 @@ To Start, use lattest version of node : v20.14.0
 npm install
 npm run build
 npm run start
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
