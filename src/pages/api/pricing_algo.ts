@@ -91,16 +91,16 @@ export const calculatePrice2 = (
   overwritePrice: OverwritePrice[] = []
 ): number => {
   //get earliest start date and the latest end date.
-  const verStartDate = [
+  const startDates = [
     startDateTime,
     ...overwritePrice.map((x) => x.startDateTime),
-  ].sort((a, b) => a.getTime() - b.getTime())[0];
+  ].sort((a, b) => a.getTime() - b.getTime());
 
-  const veryEndDate = [endDateTime, ...overwritePrice.map((x) => x.endDateTime)]
+  /*   const veryEndDate = [endDateTime, ...overwritePrice.map((x) => x.endDateTime)]
     .sort((a, b) => a.getTime() - b.getTime())
     .at(-1);
-
-  console.log(verStartDate, veryEndDate);
+ */
+  console.log(startDates);
 
   return 0;
 };
