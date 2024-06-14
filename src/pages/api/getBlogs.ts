@@ -43,7 +43,6 @@ const GET_BLOGS = graphql(`
   }
 `);
 
-
 const getBlogs = async (
   first?: number | null, //after
   last?: number | null, //before
@@ -58,7 +57,7 @@ const getBlogs = async (
     before: before || null,
     search: search || null,
   };
-  //console.log("variables", variables);
+  console.log("variables", variables);
   const data = await relayClient.request(GET_BLOGS, variables);
   return data;
 };
@@ -69,7 +68,6 @@ interface CustomApiRequest extends NextApiRequest {
     before?: string;
     count?: string;
     search?: string;
-    
   };
 }
 

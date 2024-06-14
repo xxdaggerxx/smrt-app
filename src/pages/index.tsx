@@ -6,15 +6,15 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GetBlogsQuery } from "@/gql/graphql";
 import dayjs from "dayjs";
-import { calculatePrice, calculatePrice2 } from "./api/pricing_algo";
+import { calculatePrice } from "./api/pricing_algo";
 
 //import { insertArticles } from "@/gql/addData";
 
 //console.log(insertArticles());
 
 // Example usage:
-console.log(
-  calculatePrice2(
+/* console.log(
+  calculatePrice(
     new Date("2021-11-13T09:24:00"),
     new Date("2021-11-15T15:13:00"),
     13,
@@ -31,7 +31,7 @@ console.log(
       },
     ]
   )
-);
+); */
 type BlogList = {
   author: string;
   created_at: string;
