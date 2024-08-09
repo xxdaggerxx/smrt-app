@@ -10,7 +10,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "dayjs": "^1.11.11",
+    "dayjs": "^1.11.12",
     "graphql": "^16.8.1",
     "graphql-client": "^2.0.1",
     "graphql-request": "^7.0.1",
